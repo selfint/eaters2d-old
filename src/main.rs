@@ -1,11 +1,11 @@
-fn main() {
-    println!("Hello, world!");
+use bevy::prelude::*;
+
+fn hello_world() {
+    println!("hello world!");
 }
 
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
+fn main() {
+    App::build()
+        .add_system(hello_world.system())
+        .run();
 }
