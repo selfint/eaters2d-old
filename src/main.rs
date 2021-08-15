@@ -20,6 +20,7 @@ fn add_creatures(
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());
     commands.spawn_bundle(SpriteBundle {
         material: materials.add(texture_handle),
+        sprite: Sprite::new(Vec2::new(50.0, 50.0)),
         ..Default::default()
     });
 }
