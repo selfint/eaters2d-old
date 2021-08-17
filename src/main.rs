@@ -1,5 +1,5 @@
-use eaters2d;
+use libeaters2d;
 
 fn main() {
-    eaters2d::run();
+    libeaters2d::run();
 }
