@@ -19,10 +19,8 @@ jobs:
       run: |
         rustup toolchain add nightly
         rustup override set nightly
-    - name: Configure wasm
-      run: |
-        rustup target add wasm32-unknown-unknown
-        cargo install wasm-pack
+    - name: wasm-pack-action
+      uses: jetli/wasm-pack-action@v0.3.0
     - name: Build 🔨
       run: wasm-pack build --target web --release
     - name: Copy files to build directory
