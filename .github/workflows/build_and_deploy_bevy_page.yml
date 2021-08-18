@@ -21,12 +21,15 @@ jobs:
         rustup override set nightly
     - name: Enable caching
       uses: Swatinem/rust-cache@v1
-    - name: wasm-pack-action
+    - name: Installing wasm-pack 📦
       uses: jetli/wasm-pack-action@v0.3.0
     - name: Build 🔨
       run: wasm-pack build --target web --release
     - name: Copy files to build directory
       run: |
+        pwd
+        ls
+        ls pkg
         cp index.html pkg/index.html
         cp -r assets pkg/assets
     - name: Deploy 🚀
