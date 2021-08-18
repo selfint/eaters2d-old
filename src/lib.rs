@@ -11,7 +11,7 @@ pub fn run_web() {
 
 pub fn run() {
     let mut app = App::build();
-    app.insert_resource(ClearColor(Color::rgb(0.5, 0.0, 0.45)));
+    app.insert_resource(ClearColor(Color::rgb(0.5, 0.45, 0.0)));
     app.add_plugins(DefaultPlugins);
 
     #[cfg(target_arch = "wasm32")]
