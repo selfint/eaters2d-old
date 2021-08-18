@@ -19,6 +19,8 @@ jobs:
       run: |
         rustup toolchain add nightly
         rustup override set nightly
+    - name: Enable caching
+      uses: Swatinem/rust-cache@v1
     - name: wasm-pack-action
       uses: jetli/wasm-pack-action@v0.3.0
     - name: Build 🔨
@@ -30,5 +32,5 @@ jobs:
     - name: Deploy 🚀
       uses: JamesIves/github-pages-deploy-action@4.1.4
       with:
-        branch: gh-pages # The branch the action should deploy to.
+        branch: web # The branch the action should deploy to.
         folder: pkg # The folder the action should deploy.
