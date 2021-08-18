@@ -3,8 +3,6 @@ use bevy::prelude::*;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
 
-const CREATURE_COLOR: Color = Color::rgb(1.0, 0.0, 0.0);
-
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 pub fn run_web() {
@@ -33,10 +31,9 @@ fn add_creatures(
     asset_server: Res<AssetServer>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    let mut texture_handle: ColorMaterial = asset_server.load("white_circle.png").into();
-    texture_handle.color = CREATURE_COLOR;
+    let texture_handle = asset_server.load("white_circle.png");
     commands.spawn_bundle(SpriteBundle {
-        material: materials.add(texture_handle),
+        material: materials.add(texture_handle.into()),
         sprite: Sprite::new(Vec2::new(50.0, 50.0)),
         ..Default::default()
     });
