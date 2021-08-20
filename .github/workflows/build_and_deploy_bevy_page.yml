@@ -28,10 +28,9 @@ jobs:
     - name: Copy files to build directory
       run: |
         pwd
-        ls
-        ls pkg
         cp index.html pkg/index.html
         cp -r assets pkg/assets
+        ls -R pkg
     - name: Deploy 🚀
       uses: JamesIves/github-pages-deploy-action@4.1.4
       with:
