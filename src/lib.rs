@@ -3,6 +3,8 @@ use bevy::prelude::*;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
 
+const CREATURE_AMOUNT: usize = 10;
+
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 pub fn run_web() {
@@ -27,22 +29,17 @@ fn startup_camera(mut commands: Commands) {
 }
 
 fn add_creatures(
-    commands: Commands,
-    asset_server: Res<AssetServer>,
-    materials: ResMut<Assets<ColorMaterial>>,
-) {
-    spawn_creature(asset_server, commands, materials);
-}
-
-fn spawn_creature(
     asset_server: Res<AssetServer>,
     mut commands: Commands,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    let texture_handle = asset_server.load("red_circle.png");
-    commands.spawn_bundle(SpriteBundle {
-        material: materials.add(texture_handle.into()),
+    let texture_handle: ColorMaterial = asset_server.load("red_circle.png").into();
+    let creature_material = materials.add(texture_handle);
+    let creature_bundles = (0..CREATURE_AMOUNT).map(move |i: usize| SpriteBundle {
+        material: creature_material.clone(),
         sprite: Sprite::new(Vec2::new(50.0, 50.0)),
+        transform: Transform::from_xyz(10.0 * i as f32, 20.0 * i as f32, i as f32),
         ..Default::default()
     });
+    commands.spawn_batch(creature_bundles);
 }
