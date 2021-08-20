@@ -27,8 +27,16 @@ fn startup_camera(mut commands: Commands) {
 }
 
 fn add_creatures(
-    mut commands: Commands,
+    commands: Commands,
     asset_server: Res<AssetServer>,
+    materials: ResMut<Assets<ColorMaterial>>,
+) {
+    spawn_creature(asset_server, commands, materials);
+}
+
+fn spawn_creature(
+    asset_server: Res<AssetServer>,
+    mut commands: Commands,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     let texture_handle = asset_server.load("red_circle.png");
