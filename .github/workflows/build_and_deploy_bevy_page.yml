@@ -28,11 +28,11 @@ jobs:
     - name: Copy files to build directory
       run: |
         git checkout --orphan web
-        git reset --hard
+        git reset --soft
         cp index.html pkg/index.html
         cp -r assets pkg/assets
         git add pkg
-        ls -R pkg
+        git status
         git commit -m "deploy"
     - name: Deploy 🚀
       run: |
