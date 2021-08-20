@@ -31,7 +31,7 @@ fn add_creatures(
     asset_server: Res<AssetServer>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    let texture_handle = asset_server.load("white_circle.png");
+    let texture_handle = asset_server.load("red_circle.png");
     commands.spawn_bundle(SpriteBundle {
         material: materials.add(texture_handle.into()),
         sprite: Sprite::new(Vec2::new(50.0, 50.0)),
