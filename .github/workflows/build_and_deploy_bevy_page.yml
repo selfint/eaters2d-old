@@ -27,12 +27,14 @@ jobs:
       run: wasm-pack build --target web --release
     - name: Copy files to build directory
       run: |
-        pwd
+        git checkout --orphan web
+        git reset --hard
         cp index.html pkg/index.html
         cp -r assets pkg/assets
+        git add pkg
         ls -R pkg
+        git status
+        git commit -m "deploy"
     - name: Deploy 🚀
-      uses: JamesIves/github-pages-deploy-action@4.1.4
-      with:
-        branch: web # The branch the action should deploy to.
-        folder: pkg # The folder the action should deploy.
+      run: |
+        git push -u origin web --force
