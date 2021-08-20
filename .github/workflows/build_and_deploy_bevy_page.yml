@@ -33,7 +33,6 @@ jobs:
         cp -r assets pkg/assets
         git add pkg
         ls -R pkg
-        git status
         git commit -m "deploy"
     - name: Deploy 🚀
       run: |
