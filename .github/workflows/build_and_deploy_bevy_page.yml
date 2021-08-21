@@ -28,15 +28,15 @@ jobs:
     - name: Copy files to build directory
       run: |
         git checkout --orphan web
-        git reset --soft
         cp index.html pkg/index.html
         cp -r assets pkg/
+        git reset --hard
         ls -R pkg
         git config --global user.email "selfint@gmail.com"
         git config --global user.name "Tom Selfin"
-        git add pkg
+        git add pkg --force
         git status
     - name: Deploy 🚀
       run: |
-        git commit -m "Deploy 🚀"
+        git commit -m "🚀 Deploy"
         git push -u origin web --force
