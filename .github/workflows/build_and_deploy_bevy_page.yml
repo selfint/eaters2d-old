@@ -36,7 +36,9 @@ jobs:
         ls -R pkg
         git config --global user.email "selfint@gmail.com"
         git config --global user.name "Tom Selfin"
-        git add pkg --force
+        mv pkg/* .
+        rm -r pkg
+        git add assets index.html libeaters2d* package.json --force
         git status
     - name: Deploy 🚀
       run: |
