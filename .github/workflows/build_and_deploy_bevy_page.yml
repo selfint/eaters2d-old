@@ -23,17 +23,24 @@ jobs:
       uses: Swatinem/rust-cache@v1
     - name: Installing wasm-pack 📦
       uses: jetli/wasm-pack-action@v0.3.0
+      with:
+        cache-on-failure: true
     - name: Build 🔨
       run: wasm-pack build --target web --release
     - name: Copy files to build directory
       run: |
-        pwd
-        ls
-        ls pkg
+        git checkout --orphan web
         cp index.html pkg/index.html
-        cp -r assets pkg/assets
+        cp -r assets pkg/
+        git reset --hard
+        ls -R pkg
+        git config --global user.email "selfint@gmail.com"
+        git config --global user.name "Tom Selfin"
+        mv pkg/* .
+        rm -r pkg
+        git add assets index.html libeaters2d* package.json --force
+        git status
     - name: Deploy 🚀
-      uses: JamesIves/github-pages-deploy-action@4.1.4
-      with:
-        branch: web # The branch the action should deploy to.
-        folder: pkg # The folder the action should deploy.
+      run: |
+        git commit -m "🚀 Deploy"
+        git push -u origin web --force
