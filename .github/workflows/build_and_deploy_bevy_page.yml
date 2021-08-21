@@ -30,10 +30,13 @@ jobs:
         git checkout --orphan web
         git reset --soft
         cp index.html pkg/index.html
-        cp -r assets pkg/assets
+        cp -r assets pkg/
+        ls -R pkg
+        git config --global user.email "selfint@gmail.com"
+        git config --global user.name "Tom Selfin"
         git add pkg
         git status
-        git commit -m "deploy"
     - name: Deploy 🚀
       run: |
+        git commit -m "Deploy 🚀"
         git push -u origin web --force
