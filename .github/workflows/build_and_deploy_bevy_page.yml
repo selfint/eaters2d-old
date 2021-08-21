@@ -33,12 +33,10 @@ jobs:
         cp index.html pkg/index.html
         cp -r assets pkg/
         git reset --hard
-        mv pkg/* .
-        rm -r pkg
-        ls -R .
+        ls -R pkg
         git config --global user.email "selfint@gmail.com"
         git config --global user.name "Tom Selfin"
-        git add * --force
+        git add pkg --force
         git status
     - name: Deploy 🚀
       run: |
