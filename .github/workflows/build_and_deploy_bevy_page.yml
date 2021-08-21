@@ -23,6 +23,8 @@ jobs:
       uses: Swatinem/rust-cache@v1
     - name: Installing wasm-pack 📦
       uses: jetli/wasm-pack-action@v0.3.0
+      with:
+        cache-on-failure: true
     - name: Build 🔨
       run: wasm-pack build --target web --release
     - name: Copy files to build directory
@@ -31,10 +33,12 @@ jobs:
         cp index.html pkg/index.html
         cp -r assets pkg/
         git reset --hard
-        ls -R pkg
+        mv pkg/* .
+        rm -r pkg
+        ls -R .
         git config --global user.email "selfint@gmail.com"
         git config --global user.name "Tom Selfin"
-        git add pkg --force
+        git add * --force
         git status
     - name: Deploy 🚀
       run: |
