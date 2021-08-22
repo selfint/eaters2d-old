@@ -35,11 +35,11 @@ fn add_creatures(
 ) {
     let texture_handle: ColorMaterial = asset_server.load("red_circle.png").into();
     let creature_material = materials.add(texture_handle);
-    let creature_bundles = (0..CREATURE_AMOUNT).map(move |i: usize| SpriteBundle {
+    let creatures_batch = (0..CREATURE_AMOUNT).map(move |i: usize| SpriteBundle {
         material: creature_material.clone(),
         sprite: Sprite::new(Vec2::new(50.0, 50.0)),
         transform: Transform::from_xyz(10.0 * i as f32, 20.0 * i as f32, i as f32),
         ..Default::default()
     });
-    commands.spawn_batch(creature_bundles);
+    commands.spawn_batch(creatures_batch);
 }
