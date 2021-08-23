@@ -8,6 +8,7 @@ const CREATURE_AMOUNT: usize = 10;
 const CREATURE_SIZE: f32 = 10.0;
 const FOOD_AMOUNT: usize = 10;
 const FOOD_SIZE: f32 = 5.0;
+const FOOD_PRIORITY: f32 = 1.;
 const WINDOW_WIDTH: f32 = 300.;
 const WINDOW_HEIGHT: f32 = 300.;
 
@@ -63,11 +64,24 @@ fn add_foods(
 ) {
     let texture_handle: ColorMaterial = asset_server.load("white_circle.png").into();
     let creature_material = materials.add(texture_handle);
-    let creatures_batch = (0..FOOD_AMOUNT).map(move |i: usize| SpriteBundle {
-        material: creature_material.clone(),
-        sprite: Sprite::new(Vec2::new(FOOD_SIZE, FOOD_SIZE)),
-        transform: Transform::from_xyz(20.0 * i as f32, 10.0 * i as f32, i as f32),
-        ..Default::default()
-    });
-    commands.spawn_batch(creatures_batch);
+    let mut rng = rand::thread_rng();
+
+    let min_x = -WINDOW_WIDTH / 2.;
+    let max_x = min_x + WINDOW_WIDTH;
+    let min_y = -WINDOW_HEIGHT / 2.;
+    let max_y = min_y + WINDOW_HEIGHT;
+
+    for _ in 0..FOOD_AMOUNT {
+        let food = SpriteBundle {
+            material: creature_material.clone(),
+            sprite: Sprite::new(Vec2::new(FOOD_SIZE, FOOD_SIZE)),
+            transform: Transform::from_xyz(
+                rng.gen_range(min_x..max_x),
+                rng.gen_range(min_y..max_y),
+                FOOD_PRIORITY,
+            ),
+            ..Default::default()
+        };
+        commands.spawn_bundle(food);
+    }
 }
