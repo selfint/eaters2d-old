@@ -5,7 +5,9 @@ use rand::Rng;
 use wasm_bindgen::prelude::*;
 
 const CREATURE_AMOUNT: usize = 10;
+const CREATURE_SIZE: f32 = 50.0;
 const FOOD_AMOUNT: usize = 10;
+const FOOD_SIZE: f32 = 50.0;
 
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
@@ -40,7 +42,7 @@ fn add_creatures(
     let creature_material = materials.add(texture_handle);
     let creatures_batch = (0..CREATURE_AMOUNT).map(move |i: usize| SpriteBundle {
         material: creature_material.clone(),
-        sprite: Sprite::new(Vec2::new(50.0, 50.0)),
+        sprite: Sprite::new(Vec2::new(CREATURE_SIZE, CREATURE_SIZE)),
         transform: Transform::from_xyz(10.0 * i as f32, 20.0 * i as f32, i as f32),
         ..Default::default()
     });
@@ -56,7 +58,7 @@ fn add_foods(
     let creature_material = materials.add(texture_handle);
     let creatures_batch = (0..FOOD_AMOUNT).map(move |i: usize| SpriteBundle {
         material: creature_material.clone(),
-        sprite: Sprite::new(Vec2::new(50.0, 50.0)),
+        sprite: Sprite::new(Vec2::new(FOOD_SIZE, FOOD_SIZE)),
         transform: Transform::from_xyz(20.0 * i as f32, 10.0 * i as f32, i as f32),
         ..Default::default()
     });
