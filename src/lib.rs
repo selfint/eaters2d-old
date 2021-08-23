@@ -5,9 +5,11 @@ use rand::Rng;
 use wasm_bindgen::prelude::*;
 
 const CREATURE_AMOUNT: usize = 10;
-const CREATURE_SIZE: f32 = 50.0;
+const CREATURE_SIZE: f32 = 10.0;
 const FOOD_AMOUNT: usize = 10;
-const FOOD_SIZE: f32 = 50.0;
+const FOOD_SIZE: f32 = 5.0;
+const WINDOW_WIDTH: f32 = 300.;
+const WINDOW_HEIGHT: f32 = 300.;
 
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
@@ -18,6 +20,11 @@ pub fn run_web() {
 pub fn run() {
     let mut app = App::build();
     app.insert_resource(ClearColor(Color::rgb(0.0, 0.0, 0.5)));
+    app.insert_resource(WindowDescriptor {
+        width: WINDOW_WIDTH,
+        height: WINDOW_HEIGHT,
+        ..Default::default()
+    });
     app.add_plugins(DefaultPlugins);
 
     #[cfg(target_arch = "wasm32")]
@@ -64,4 +71,3 @@ fn add_foods(
     });
     commands.spawn_batch(creatures_batch);
 }
-
