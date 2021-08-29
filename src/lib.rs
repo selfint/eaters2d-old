@@ -1,8 +1,9 @@
+use crate::creature::add_creatures;
 use bevy::prelude::*;
-use rand::Rng;
-
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
+
+mod creature;
 
 const WINDOW_WIDTH: f32 = 500.;
 const WINDOW_HEIGHT: f32 = 500.;
@@ -26,7 +27,8 @@ pub fn run() {
     #[cfg(target_arch = "wasm32")]
     app.add_plugin(bevy_webgl2::WebGL2Plugin);
 
-    app.add_startup_system(startup_camera.system());
+    app.add_startup_system(startup_camera.system())
+        .add_startup_system(add_creatures.system());
     app.run();
 }
 
