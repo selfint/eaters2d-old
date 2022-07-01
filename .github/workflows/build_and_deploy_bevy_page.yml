@@ -43,13 +43,14 @@ jobs:
           args: --release --target wasm32-unknown-unknown
       - name : Run wasm-pack 📦
         run: wasm-pack build --target web --release
-      - name: Deploy 🚀
+      - name: Create gh-pages dir
         run: |
-          git checkout --orphan web
-          git reset --hard
-          git config --global user.email "selfint@gmail.com"
-          git config --global user.name "Tom Selfin"
-          git add index.html pkg assets --force
-          git status
-          git commit -m "Deploy 🚀"
-          git push -u origin web --force
+          mkdir gh-pages
+          cp index.html gh-pages
+          cp -r assets gh-pages
+          cp -r pkg gh-pages
+      - name: Deploy 🚀
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./gh-pages
