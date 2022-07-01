@@ -24,7 +24,6 @@ jobs:
       - name: Installing wasm-pack 📦
         uses: jetli/wasm-pack-action@v0.3.0
         with:
-          cache-on-failure: true
           version: latest
       - name: Build 🔨
         run: wasm-pack build --target web --release
