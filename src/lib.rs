@@ -1,4 +1,4 @@
-use crate::creature::add_creatures;
+use creature::*;
 use bevy::prelude::*;
 use wasm_bindgen::prelude::*;
 
@@ -6,6 +6,9 @@ mod creature;
 
 const WINDOW_WIDTH: f32 = 500.;
 const WINDOW_HEIGHT: f32 = 500.;
+const CREATURE_SIZE: f32 = 10.;
+
+
 
 #[wasm_bindgen]
 pub fn run_web() {
@@ -33,3 +36,21 @@ pub fn run() {
 fn startup_camera(mut commands: Commands) {
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());
 }
+
+pub fn add_creatures(
+    asset_server: Res<AssetServer>,
+    mut commands: Commands,
+) {
+
+    let creature = SpriteBundle {
+        sprite: Sprite { 
+            custom_size: Some(Vec2::new(CREATURE_SIZE, CREATURE_SIZE)), 
+            ..default()
+        },
+        texture: asset_server.load("red_circle.png"),
+        ..Default::default()
+    };
+
+    commands.spawn_bundle(creature).insert(Creature);
+}
+
