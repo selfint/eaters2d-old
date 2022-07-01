@@ -19,28 +19,35 @@ jobs:
         with:
           toolchain: nightly
           default: true
+          target: wasm32-unknown-unknown
       - name: Enable caching 📥
-        uses: Swatinem/rust-cache@v1
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Installing wasm-pack 📦
         uses: jetli/wasm-pack-action@v0.3.0
         with:
           version: latest
-      - name: Build 🔨
+      - name: Compile to .wasm 🔨
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release
+      - name : Run wasm-pack 📦
         run: wasm-pack build --target web --release
-      - name: Copy files to build directory 📋
-        run: |
-          git checkout --orphan web
-          cp index.html pkg/index.html
-          cp -r assets pkg/
-          git reset --hard
-          ls -R pkg
-          git config --global user.email "selfint@gmail.com"
-          git config --global user.name "Tom Selfin"
-          mv pkg/* .
-          rm -r pkg
-          git add assets index.html libeaters2d* package.json --force
-          git status
       - name: Deploy 🚀
         run: |
+          git checkout --orphan web
+          git reset --hard
+          git config --global user.email "selfint@gmail.com"
+          git config --global user.name "Tom Selfin"
+          git add index.html pkg assets --force
+          git status
           git commit -m "Deploy 🚀"
           git push -u origin web --force
