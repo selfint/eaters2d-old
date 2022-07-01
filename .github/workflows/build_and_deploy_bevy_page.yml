@@ -21,15 +21,7 @@ jobs:
           default: true
           target: wasm32-unknown-unknown
       - name: Enable caching 📥
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        uses: Swatinem/rust-cache@v1
       - name: Installing wasm-pack 📦
         uses: jetli/wasm-pack-action@v0.3.0
         with:
@@ -43,14 +35,13 @@ jobs:
           args: --release --target wasm32-unknown-unknown
       - name : Run wasm-pack 📦
         run: wasm-pack build --target web --release
-      - name: Create gh-pages dir
-        run: |
-          mkdir gh-pages
-          cp index.html gh-pages
-          cp -r assets gh-pages
-          cp -r pkg gh-pages
       - name: Deploy 🚀
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./gh-pages
+        run: |
+          git checkout --orphan web
+          git reset --hard
+          git config --global user.email "selfint@gmail.com"
+          git config --global user.name "Tom Selfin"
+          git add index.html pkg assets --force
+          git status
+          git commit -m "Deploy 🚀"
+          git push -u origin web --force
