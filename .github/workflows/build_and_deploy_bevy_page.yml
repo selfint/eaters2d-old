@@ -39,8 +39,10 @@ jobs:
         run: |
           git checkout --orphan web
           mv index.html pkg/index.html
+          mv assets pkg/assets
           git reset --hard
           mv pkg/index.html index.html
+          mv pkg/assets assets
           git add assets pkg index.html --force
           git status
           ls
