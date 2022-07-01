@@ -2,9 +2,7 @@ name: Rust
 
 on:
   push:
-    branches: [bevy]
-  pull_request:
-    branches: [bevy]
+    branches: [main]
 
 env:
   CARGO_TERM_COLOR: always
