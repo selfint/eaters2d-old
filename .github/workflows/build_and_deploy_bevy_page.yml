@@ -39,7 +39,7 @@ jobs:
         run: |
           git checkout --orphan web
           git reset --soft
-          git rm --cached *
+          git rm --cached -r *
           git config --global user.email "selfint@gmail.com"
           git config --global user.name "Tom Selfin"
           git add index.html pkg assets --force
