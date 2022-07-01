@@ -42,5 +42,5 @@ jobs:
           git status
       - name: Deploy 🚀
         run: |
-          git commit -m "🚀 Deploy"
+          git commit -m "Deploy 🚀"
           git push -u origin web --force
