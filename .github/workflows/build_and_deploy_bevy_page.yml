@@ -2,9 +2,9 @@ name: Rust
 
 on:
   push:
-    branches: [ bevy ]
+    branches: [bevy]
   pull_request:
-    branches: [ bevy ]
+    branches: [bevy]
 
 env:
   CARGO_TERM_COLOR: always
@@ -14,33 +14,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Configure nightly 🌙
-      run: |
-        rustup toolchain add nightly
-        rustup override set nightly
-    - name: Enable caching
-      uses: Swatinem/rust-cache@v1
-    - name: Installing wasm-pack 📦
-      uses: jetli/wasm-pack-action@v0.3.0
-      with:
-        cache-on-failure: true
-    - name: Build 🔨
-      run: wasm-pack build --target web --release
-    - name: Copy files to build directory
-      run: |
-        git checkout --orphan web
-        cp index.html pkg/index.html
-        cp -r assets pkg/
-        git reset --hard
-        ls -R pkg
-        git config --global user.email "selfint@gmail.com"
-        git config --global user.name "Tom Selfin"
-        mv pkg/* .
-        rm -r pkg
-        git add assets index.html libeaters2d* package.json --force
-        git status
-    - name: Deploy 🚀
-      run: |
-        git commit -m "🚀 Deploy"
-        git push -u origin web --force
+      - uses: actions/checkout@v2
+      - name: Configure nightly 🌙
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+      - name: Enable caching 📥
+        uses: Swatinem/rust-cache@v1
+      - name: Installing wasm-pack 📦
+        uses: jetli/wasm-pack-action@v0.3.0
+        with:
+          cache-on-failure: true
+          version: latest
+      - name: Build 🔨
+        run: wasm-pack build --target web --release
+      - name: Copy files to build directory 📋
+        run: |
+          git checkout --orphan web
+          cp index.html pkg/index.html
+          cp -r assets pkg/
+          git reset --hard
+          ls -R pkg
+          git config --global user.email "selfint@gmail.com"
+          git config --global user.name "Tom Selfin"
+          mv pkg/* .
+          rm -r pkg
+          git add assets index.html libeaters2d* package.json --force
+          git status
+      - name: Deploy 🚀
+        run: |
+          git commit -m "🚀 Deploy"
+          git push -u origin web --force
