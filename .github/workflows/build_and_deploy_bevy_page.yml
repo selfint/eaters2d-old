@@ -17,6 +17,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
+          default: true
       - name: Enable caching 📥
         uses: Swatinem/rust-cache@v1
       - name: Installing wasm-pack 📦
