@@ -35,14 +35,23 @@ jobs:
           args: --release --target wasm32-unknown-unknown
       - name : Run wasm-pack 📦
         run: wasm-pack build --target web --release
-      - name: Deploy 🚀
+      - name: Build web directory
         run: |
           git checkout --orphan web
-          git reset --soft
-          git rm --cached -r *
+          mkdir web
+          cp index.html web/index.html
+          cp -r assets web/
+          cp -r pkg web/
+          ls -R web
+      - name: Deploy 🚀
+        run: |
+          git reset --hard
+          mv web/assets assets
+          mv web/pkg pkg
+          mv web/index.html index.html
+          git add . --force
+          git status
           git config --global user.email "selfint@gmail.com"
           git config --global user.name "Tom Selfin"
-          git add index.html pkg assets --force
-          git status
-          git commit -m "Deploy 🚀"
+          git commit -m "🚀 Deploy"
           git push -u origin web --force
