@@ -26,8 +26,8 @@ jobs:
         uses: jetli/wasm-pack-action@v0.3.0
         with:
           version: latest
-      - name: Install Bevy dependencies 🕊️🕊️🕊️
-        run: sudo apt-get install libasound2-dev libudev-dev
+      # - name: Install Bevy dependencies 🕊️🕊️🕊️
+      #   run: sudo apt-get install libasound2-dev libudev-dev
       - name: Compile to .wasm 🔨
         uses: actions-rs/cargo@v1
         with:
@@ -46,12 +46,13 @@ jobs:
       - name: Deploy 🚀
         run: |
           git reset --hard
-          mv web/assets assets
-          mv web/pkg pkg
+          mv web/assets .
+          mv web/pkg .
           mv web/index.html index.html
-          git add . --force
+          git add assets pkg index.html --force
           git status
+          ls
           git config --global user.email "selfint@gmail.com"
           git config --global user.name "Tom Selfin"
-          git commit -m "🚀 Deploy"
+          git commit -m "Deploy 🚀"
           git push -u origin web --force
