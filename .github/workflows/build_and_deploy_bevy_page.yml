@@ -38,7 +38,8 @@ jobs:
       - name: Deploy 🚀
         run: |
           git checkout --orphan web
-          git reset --hard
+          git reset --soft
+          git rm --cached *
           git config --global user.email "selfint@gmail.com"
           git config --global user.name "Tom Selfin"
           git add index.html pkg assets --force
