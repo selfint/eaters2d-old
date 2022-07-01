@@ -35,7 +35,7 @@ jobs:
         with:
           version: latest
       - name: Install Bevy dependencies
-        run: sudo apt-get install libasound2-dev libudev
+        run: sudo apt-get install libasound2-dev libudev-dev
       - name: Compile to .wasm 🔨
         uses: actions-rs/cargo@v1
         with:
