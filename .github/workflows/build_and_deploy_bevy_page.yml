@@ -26,8 +26,8 @@ jobs:
         uses: jetli/wasm-pack-action@v0.3.0
         with:
           version: latest
-      # - name: Install Bevy dependencies 🕊️🕊️🕊️
-      #   run: sudo apt-get install libasound2-dev libudev-dev
+      - name: Install Bevy dependencies 🕊️🕊️🕊️
+        run: sudo apt-get install libasound2-dev libudev-dev
       - name: Compile to .wasm 🔨
         uses: actions-rs/cargo@v1
         with:
