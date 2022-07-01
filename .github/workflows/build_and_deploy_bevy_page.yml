@@ -35,20 +35,12 @@ jobs:
           args: --release --target wasm32-unknown-unknown
       - name : Run wasm-pack 📦
         run: wasm-pack build --target web --release
-      - name: Build web directory
-        run: |
-          git checkout --orphan web
-          mkdir web
-          cp index.html web/index.html
-          cp -r assets web/
-          cp -r pkg web/
-          ls -R web
       - name: Deploy 🚀
         run: |
+          git checkout --orphan web
+          mv index.html pkg/index.html
           git reset --hard
-          mv web/assets .
-          mv web/pkg .
-          mv web/index.html index.html
+          mv pkg/index.html index.html
           git add assets pkg index.html --force
           git status
           ls
