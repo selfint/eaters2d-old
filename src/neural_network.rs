@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use rand::Rng;
 
 /// Very simple neural network implementation, with a flat parameter vector
 /// for easier genetic algorithm implementation.
@@ -11,6 +12,41 @@ pub struct NeuralNetwork {
 }
 
 impl NeuralNetwork {
+    fn new(dims: &[usize], activation_function: fn(f32) -> f32) -> Self {
+        assert!(
+            dims.len() >= 2,
+            "Neural network must have at least one input layer and one output layer"
+        );
+
+        let input_size = dims[0];
+
+        // total weights connecting each layer to the previous layer
+        let total_weights = dims
+            .iter()
+            .zip(dims.iter().skip(1))
+            .map(|(&a, &b)| a * b)
+            .sum::<usize>();
+
+        // total biases for each layer
+        let total_biases = dims.iter().skip(1).sum::<usize>();
+
+        // generate random parameters
+        let mut rng = rand::thread_rng();
+        let parameters = (0..total_weights + total_biases)
+            .map(|_| rng.gen::<f32>())
+            .collect();
+
+        // create hidden layer dimensions
+        let dimensions = dims[1..].to_vec();
+
+        Self {
+            input_size,
+            parameters,
+            dimensions,
+            activation_function,
+        }
+    }
+
     fn forward(&self, inputs: &[f32]) -> Vec<f32> {
         let (weights, biases) = self.unpack_parameters();
 
