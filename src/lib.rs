@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use creature::*;
-use neural_network::*;
+use food::*;
 use wasm_bindgen::prelude::*;
 
 mod creature;
@@ -33,7 +33,8 @@ pub fn run() {
     app.add_plugins(DefaultPlugins);
 
     app.add_startup_system(startup_camera)
-        .add_startup_system(add_creatures);
+        .add_startup_system(add_creatures)
+        .add_startup_system(spawn_foods);
 
     app.run();
 }
@@ -42,7 +43,7 @@ fn startup_camera(mut commands: Commands) {
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());
 }
 
-pub fn add_creatures(asset_server: Res<AssetServer>, mut commands: Commands) {
+fn add_creatures(asset_server: Res<AssetServer>, mut commands: Commands) {
     let texture = asset_server.load("white_circle.png");
 
     commands.spawn_batch((0..CREATURE_COUNT).map(move |_| {
@@ -51,6 +52,18 @@ pub fn add_creatures(asset_server: Res<AssetServer>, mut commands: Commands) {
             CREATURE_SIZE,
             CREATURE_HEALTH,
             &[1, 3, 1],
+            texture.clone(),
+        )
+    }));
+}
+
+fn spawn_foods(asset_server: Res<AssetServer>, mut commands: Commands) {
+    let texture = asset_server.load("white_circle.png");
+
+    commands.spawn_batch((0..FOOD_COUNT).map(move |_| {
+        FoodBundle::new(
+            random_location(),
+            FOOD_SIZE,
             texture.clone(),
         )
     }));
