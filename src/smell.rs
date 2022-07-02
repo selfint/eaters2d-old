@@ -20,6 +20,10 @@ impl CanSmell {
 
     pub fn get_signal(&self) -> f32 {
         let strongest = self.current_smell.max(self.previous_smell);
+
+        if strongest == 0. {
+            return 0.;
+        }
         
         (self.current_smell - self.previous_smell) / strongest
     }
@@ -30,7 +34,7 @@ pub fn smell_system(
     mut receivers: Query<(&mut CanSmell, &Transform)>,
 ) {
     for (mut receiver_smell, receiver_transform) in receivers.iter_mut() {
-        receiver_smell.current_smell = 0.;
+        let mut current_smell = 0.;
 
         for (emitter_smell, emitter_transform) in emitters.iter() {
             let distance = receiver_transform.translation.distance(emitter_transform.translation);
@@ -38,8 +42,10 @@ pub fn smell_system(
             if distance < receiver_smell.smell_radius {
                 let smell_strength = emitter_smell.smell * (1. - distance / receiver_smell.smell_radius);
             
-                receiver_smell.current_smell += smell_strength;
+                current_smell += smell_strength;
             }
         }
+
+        receiver_smell.update(current_smell);
     }
 }

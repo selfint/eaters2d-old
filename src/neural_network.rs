@@ -33,7 +33,7 @@ impl NeuralNetwork {
         // generate random parameters
         let mut rng = rand::thread_rng();
         let parameters = (0..total_weights + total_biases)
-            .map(|_| rng.gen::<f32>())
+            .map(|_| rng.gen_range(-0.1..0.1))
             .collect();
 
         // create hidden layer dimensions
@@ -132,7 +132,7 @@ pub fn tanh_activation(x: f32) -> f32 {
 #[cfg(test)]
 mod tests {
 
-    use super::*;
+    use crate::*;
 
     #[test]
     fn test_unpack_parameters() {

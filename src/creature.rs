@@ -1,11 +1,12 @@
-use super::neural_network::*;
-use super::smell::CanSmell;
+use crate::neural_network::*;
+use crate::smell::CanSmell;
 use bevy::prelude::*;
 
 #[derive(Component)]
 pub struct Creature {
-    age: f32,
-    health: f32,
+    pub age: f32,
+    pub health: f32,
+    pub size: f32,
     direction: Vec2,
     speed: f32,
 }
@@ -32,12 +33,13 @@ impl CreatureBundle {
             creature: Creature {
                 health,
                 age: 0.,
+                size,
                 direction: Vec2::new(0., 0.),
                 speed: 0.,
             },
             neural_network: NeuralNetwork::new(dims, sigmoid_activation),
             can_smell: CanSmell {
-                smell_radius: size * 10.,
+                smell_radius: size * 3.,
                 current_smell: 0.,
                 previous_smell: 0.,
             },
@@ -63,9 +65,12 @@ pub fn creature_movement(
 ) {
     for (can_smell, neural_network, mut creature, mut transform) in query.iter_mut() {
         let network_input = vec![can_smell.get_signal()];
+        
         let network_output = neural_network.forward(&network_input);
 
-        let turn = network_output[0] * 2. - 1.;
+        // println!("{:?} {:?}", network_input, network_output);
+
+        let turn = network_output[0] * 0.2 - 0.1;
         let speed = network_output[1] * 2. - 1.;
 
         let current_angle = creature.direction.y.atan2(creature.direction.x);
