@@ -2,8 +2,6 @@ use super::neural_network::*;
 use super::smell::CanSmell;
 use bevy::prelude::*;
 
-struct Angle(f32);
-
 #[derive(Component)]
 pub struct Creature {
     age: f32,
@@ -78,5 +76,6 @@ pub fn creature_movement(
         creature.speed = creature.speed.clamp(0., 1.);
 
         transform.translation.x += creature.direction.x * creature.speed;         
+        transform.translation.y += creature.direction.y * creature.speed;         
     }
 }
