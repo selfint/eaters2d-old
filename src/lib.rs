@@ -1,14 +1,19 @@
-use creature::*;
 use bevy::prelude::*;
+use creature::*;
+use neural_network::*;
 use wasm_bindgen::prelude::*;
 
 mod creature;
+mod food;
+mod neural_network;
 
 const WINDOW_WIDTH: f32 = 500.;
 const WINDOW_HEIGHT: f32 = 500.;
 const CREATURE_SIZE: f32 = 10.;
-
-
+const FOOD_SIZE: f32 = 5.;
+const FOOD_COUNT: usize = 100;
+const CREATURE_COUNT: usize = 10;
+const CREATURE_HEALTH: f32 = 100.;
 
 #[wasm_bindgen]
 pub fn run_web() {
@@ -37,20 +42,23 @@ fn startup_camera(mut commands: Commands) {
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());
 }
 
-pub fn add_creatures(
-    asset_server: Res<AssetServer>,
-    mut commands: Commands,
-) {
+pub fn add_creatures(asset_server: Res<AssetServer>, mut commands: Commands) {
+    let texture = asset_server.load("white_circle.png");
 
-    let creature = SpriteBundle {
-        sprite: Sprite { 
-            custom_size: Some(Vec2::new(CREATURE_SIZE, CREATURE_SIZE)), 
-            ..default()
-        },
-        texture: asset_server.load("red_circle.png"),
-        ..Default::default()
-    };
-
-    commands.spawn_bundle(creature).insert(Creature);
+    commands.spawn_batch((0..CREATURE_COUNT).map(move |_| {
+        CreatureBundle::new(
+            random_location(),
+            CREATURE_SIZE,
+            CREATURE_HEALTH,
+            &[1, 3, 1],
+            texture.clone(),
+        )
+    }));
 }
 
+fn random_location() -> Vec2 {
+    Vec2::new(
+        rand::random::<f32>() * WINDOW_WIDTH - WINDOW_WIDTH / 2.,
+        rand::random::<f32>() * WINDOW_HEIGHT - WINDOW_HEIGHT / 2.,
+    )
+}

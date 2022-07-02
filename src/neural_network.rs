@@ -12,7 +12,7 @@ pub struct NeuralNetwork {
 }
 
 impl NeuralNetwork {
-    fn new(dims: &[usize], activation_function: fn(f32) -> f32) -> Self {
+    pub fn new(dims: &[usize], activation_function: fn(f32) -> f32) -> Self {
         assert!(
             dims.len() >= 2,
             "Neural network must have at least one input layer and one output layer"
