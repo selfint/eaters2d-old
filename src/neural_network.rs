@@ -47,7 +47,7 @@ impl NeuralNetwork {
         }
     }
 
-    fn forward(&self, inputs: &[f32]) -> Vec<f32> {
+    pub fn forward(&self, inputs: &[f32]) -> Vec<f32> {
         let (weights, biases) = self.unpack_parameters();
 
         let mut prev_layer_outputs = inputs.to_vec();

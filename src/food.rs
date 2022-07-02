@@ -1,3 +1,4 @@
+use super::smell::*;
 use bevy::prelude::*;
 
 #[derive(Component)]
@@ -6,19 +7,17 @@ pub struct Food;
 #[derive(Bundle)]
 pub struct FoodBundle {
     food: Food,
- 
+    emits_smell: EmitsSmell,
+
     #[bundle]
     sprite_bundle: SpriteBundle,
 }
 
 impl FoodBundle {
-    pub fn new(
-        location: Vec2,
-        size: f32,
-        texture: Handle<Image>,
-    ) -> Self {
+    pub fn new(location: Vec2, size: f32, texture: Handle<Image>) -> Self {
         FoodBundle {
             food: Food,
+            emits_smell: EmitsSmell { smell: size },
             sprite_bundle: SpriteBundle {
                 sprite: Sprite {
                     custom_size: Some(Vec2::new(size, size)),
