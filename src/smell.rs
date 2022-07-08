@@ -30,7 +30,7 @@ impl CanSmellBundle {
             sprite_bundle: SpriteBundle {
                 sprite: Sprite {
                     color: Color::rgb(0., 0., 1.),
-                    custom_size: Some(Vec2::new(smell_strength / 10., smell_strength / 10.)),
+                    custom_size: Some(Vec2::new(smell_strength * 10., smell_strength * 10.)),
                     ..default()
                 },
                 transform,
