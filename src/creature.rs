@@ -2,20 +2,19 @@ use crate::neural_network::*;
 use crate::smell::CanSmell;
 use bevy::prelude::*;
 
-#[derive(Component)]
+#[derive(Component, Debug)]
 pub struct Creature {
     pub age: f32,
     pub health: f32,
     pub size: f32,
-    direction: Vec2,
     speed: f32,
+    pub food_eaten: usize,
 }
 
 #[derive(Bundle)]
 pub struct CreatureBundle {
     creature: Creature,
     neural_network: NeuralNetwork,
-    can_smell: CanSmell,
 
     #[bundle]
     sprite_bundle: SpriteBundle,
@@ -34,15 +33,10 @@ impl CreatureBundle {
                 health,
                 age: 0.,
                 size,
-                direction: Vec2::new(0., 0.),
                 speed: 0.,
+                food_eaten: 0,
             },
             neural_network: NeuralNetwork::new(dims, sigmoid_activation),
-            can_smell: CanSmell {
-                smell_radius: size * 3.,
-                current_smell: 0.,
-                previous_smell: 0.,
-            },
             sprite_bundle: SpriteBundle {
                 sprite: Sprite {
                     custom_size: Some(Vec2::new(size, size)),
@@ -61,26 +55,36 @@ impl CreatureBundle {
 }
 
 pub fn creature_movement(
-    mut query: Query<(&CanSmell, &NeuralNetwork, &mut Creature, &mut Transform)>,
+    mut query: Query<(&mut Transform, &NeuralNetwork, &mut Creature, &Children)>,
+    children_q: Query<(&CanSmell, &Transform), Without<Creature>>,
 ) {
-    for (can_smell, neural_network, mut creature, mut transform) in query.iter_mut() {
-        let network_input = vec![can_smell.get_signal()];
-        
-        let network_output = neural_network.forward(&network_input);
+    for (mut transform, neural_network, mut creature, children) in query.iter_mut() {
+        let mut inputs: Vec<(&CanSmell, &Transform)> = children
+            .iter()
+            .map(|&child| children_q.get(child).unwrap())
+            .collect();
 
-        // println!("{:?} {:?}", network_input, network_output);
+        // sort inputs by distance to creature
+        // TODO: Are the child components receive in the same order they are inserted? If so, this isn't necessary
+        inputs.sort_by(|(_, &at), (_, &bt)| at.translation.partial_cmp(&bt.translation).unwrap());
 
-        let turn = network_output[0] * 0.2 - 0.1;
-        let speed = network_output[1] * 2. - 1.;
+        // pipe inputs into neural network
+        let network_inputs: Vec<f32> = inputs.iter().map(|v| v.0.smell).collect();
+        let network_outputs = neural_network.forward(&network_inputs);
 
-        let current_angle = creature.direction.y.atan2(creature.direction.x);
-        let new_angle = current_angle + turn;
-        creature.direction = Vec2::new(new_angle.cos(), new_angle.sin());
+        // unpack network outputs
+        let new_speed = network_outputs[0];
+        let angle_change = network_outputs[1] * 0.05 - 0.025;
 
-        creature.speed += speed;
-        creature.speed = creature.speed.clamp(0., 1.);
+        // calculate step
+        creature.speed = new_speed;
 
-        transform.translation.x += creature.direction.x * creature.speed;         
-        transform.translation.y += creature.direction.y * creature.speed;         
+        // turn
+        transform.rotate(Quat::from_rotation_z(angle_change * std::f32::consts::PI));
+        let new_angle = transform.rotation.to_scaled_axis().z;
+
+        // advance
+        let step: Vec3 = Vec3::new(new_angle.cos(), new_angle.sin(), 0.0) * creature.speed;
+        transform.translation += step;
     }
 }

@@ -48,6 +48,14 @@ impl NeuralNetwork {
     }
 
     pub fn forward(&self, inputs: &[f32]) -> Vec<f32> {
+        assert_eq!(
+            inputs.len(),
+            self.input_size,
+            "Got inputs of size {} but expected size {}",
+            inputs.len(),
+            self.input_size
+        );
+
         let (weights, biases) = self.unpack_parameters();
 
         let mut prev_layer_outputs = inputs.to_vec();
@@ -131,8 +139,7 @@ pub fn tanh_activation(x: f32) -> f32 {
 
 #[cfg(test)]
 mod tests {
-
-    use crate::*;
+    use super::*;
 
     #[test]
     fn test_unpack_parameters() {
@@ -161,5 +168,14 @@ mod tests {
         let input = vec![1.0, 1.0];
         let output = neural_network.forward(&input);
         assert_eq!(output, vec![sigmoid_activation(1.) + 0.5]);
+    }
+
+    #[test]
+    fn test_big_neural_network() {
+        let neural_network = NeuralNetwork::new(&[2, 10, 4, 5, 1], sigmoid_activation);
+
+        let input = vec![1.0, 1.0];
+        let output = neural_network.forward(&input);
+        assert_eq!(output.len(), 1);
     }
 }

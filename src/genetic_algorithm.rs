@@ -55,12 +55,20 @@ pub fn genetic_algorithm(
 
         // sample random potential mate based on their health
         let mut rng = rand::thread_rng();
+
+        let max_food_eaten: usize = potential_mates
+            .iter()
+            .map(|(creature, _)| creature.food_eaten)
+            .max()
+            .unwrap_or(1)
+            .max(1);
+
         let potential_mates: Vec<&NeuralNetwork> = potential_mates
             .iter()
             .filter_map(|(creature, network)| {
-                if rng.gen_range(0.0..config.creature_health + config.creature_max_age)
-                    < creature.health + creature.age
-                {
+                let fitness = creature.food_eaten as f32 / max_food_eaten as f32;
+
+                if rng.gen_range(0.0..1.0) < fitness {
                     Some(network)
                 } else {
                     None
@@ -83,9 +91,12 @@ pub fn genetic_algorithm(
                 }
             }
 
+            println!("new params: {:?}", new_params);
+
             // mutate
             for param in &mut new_params {
                 if rng.gen::<f32>() < config.creature_mutation_rate {
+                    println!("mutated");
                     *param += rng
                         .gen_range(-config.creature_mutation_range..config.creature_mutation_range);
                 }

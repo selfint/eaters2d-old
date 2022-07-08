@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use creature::*;
 use food::*;
 use genetic_algorithm::Dead;
+use smell::*;
 use wasm_bindgen::prelude::*;
 
 mod creature;
@@ -10,15 +11,15 @@ mod genetic_algorithm;
 mod neural_network;
 mod smell;
 
-const WINDOW_WIDTH: f32 = 300.;
-const WINDOW_HEIGHT: f32 = 300.;
-const CREATURE_SIZE: f32 = 10.;
+const WINDOW_WIDTH: f32 = 500.;
+const WINDOW_HEIGHT: f32 = 500.;
+const CREATURE_SIZE: f32 = 15.;
 const FOOD_SIZE: f32 = 5.;
 const FOOD_COUNT: usize = 100;
 const CREATURE_COUNT: usize = 20;
-const CREATURE_HEALTH: f32 = 4.;
-const CREATURE_MAX_AGE: f32 = 10.;
-const CREATURE_MUTATION_RATE: f32 = 0.1;
+const CREATURE_HEALTH: f32 = 3.;
+const CREATURE_MAX_AGE: f32 = 60.;
+const CREATURE_MUTATION_RATE: f32 = 0.05;
 const CREATURE_MUTATION_RANGE: f32 = 0.05;
 
 pub struct Config {
@@ -36,7 +37,7 @@ pub fn run_web() {
 pub fn run() {
     let mut app = App::new();
 
-    app.insert_resource(ClearColor(Color::rgb(0.3, 0.2, 0.0)));
+    app.insert_resource(ClearColor(Color::rgb(0.4, 0.3, 0.0)));
     app.insert_resource(WindowDescriptor {
         width: WINDOW_WIDTH,
         height: WINDOW_HEIGHT,
@@ -75,30 +76,46 @@ fn startup_camera(mut commands: Commands) {
 fn add_creatures(asset_server: Res<AssetServer>, mut commands: Commands) {
     let texture = asset_server.load("white_circle.png");
 
-    commands.spawn_batch((0..CREATURE_COUNT).map(move |_| {
-        CreatureBundle::new(
-            random_location(),
-            CREATURE_SIZE,
-            CREATURE_HEALTH,
-            &[1, 3, 2],
-            texture.clone(),
-        )
-    }));
+    for _ in 0..CREATURE_COUNT {
+        commands
+            .spawn_bundle(CreatureBundle::new(
+                random_location(),
+                CREATURE_SIZE,
+                CREATURE_HEALTH,
+                &[2, 2],
+                texture.clone(),
+            ))
+            .with_children(|parent| {
+                for i in [-1., 1.] {
+                    parent.spawn_bundle(CanSmellBundle::new(
+                        CREATURE_SIZE * 2.,
+                        Transform::from_xyz(0., i * CREATURE_SIZE / 2., 1.),
+                        texture.clone(),
+                    ));
+                }
+            });
+    }
 }
 
 fn spawn_foods(asset_server: Res<AssetServer>, mut commands: Commands) {
     let texture = asset_server.load("white_circle.png");
 
-    commands.spawn_batch(
-        (0..FOOD_COUNT)
-            .map(move |_| FoodBundle::new(random_location(), FOOD_SIZE, texture.clone())),
-    );
+    commands.spawn_batch((0..FOOD_COUNT).map(move |_| {
+        FoodBundle::new(random_location_with_offset(3.), FOOD_SIZE, texture.clone())
+    }));
 }
 
 fn random_location() -> Vec2 {
     Vec2::new(
         rand::random::<f32>() * WINDOW_WIDTH - WINDOW_WIDTH / 2.,
         rand::random::<f32>() * WINDOW_HEIGHT - WINDOW_HEIGHT / 2.,
+    )
+}
+
+fn random_location_with_offset(offset: f32) -> Vec2 {
+    Vec2::new(
+        rand::random::<f32>() * WINDOW_WIDTH / offset * 2. - WINDOW_WIDTH / offset,
+        rand::random::<f32>() * WINDOW_HEIGHT / offset * 2. - WINDOW_HEIGHT / offset,
     )
 }
 
@@ -125,17 +142,15 @@ fn creature_eat(
 
             if distance < creature.size / 2. + food.size / 2. {
                 creature.health += food.size;
-                food_transform.translation = random_location().extend(0.);
+                creature.food_eaten += 1;
+                food_transform.translation = random_location_with_offset(3.).extend(0.);
             }
         }
     }
 }
 
-fn debugger(query: Query<&Creature>) {
-    let mut max_health: f32 = 0.;
-    for creature in query.iter() {
-        max_health = max_health.max(creature.health);
+fn debugger(query: Query<(&Creature, &Transform)>) {
+    for (smell, transform) in query.iter() {
+        // println!("{:?} {:?}", smell, transform);
     }
-
-    println!("max_health: {:?}", max_health);
 }

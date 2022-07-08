@@ -5,27 +5,39 @@ pub struct EmitsSmell {
     pub smell: f32,
 }
 
-#[derive(Component)]
+#[derive(Component, Debug, Default)]
 pub struct CanSmell {
-    pub smell_radius: f32,
-    pub current_smell: f32,
-    pub previous_smell: f32,
+    pub smell_strength: f32,
+    pub smell: f32,
+    strongest_ever: f32,
 }
 
-impl CanSmell {
-    pub fn update(&mut self, smell: f32) {
-        self.previous_smell = self.current_smell;
-        self.current_smell = smell;
-    }
+#[derive(Bundle)]
+pub struct CanSmellBundle {
+    pub can_smell: CanSmell,
 
-    pub fn get_signal(&self) -> f32 {
-        let strongest = self.current_smell.max(self.previous_smell);
+    #[bundle]
+    pub sprite_bundle: SpriteBundle,
+}
 
-        if strongest == 0. {
-            return 0.;
+impl CanSmellBundle {
+    pub fn new(smell_strength: f32, transform: Transform, texture: Handle<Image>) -> Self {
+        CanSmellBundle {
+            can_smell: CanSmell {
+                smell_strength,
+                ..default()
+            },
+            sprite_bundle: SpriteBundle {
+                sprite: Sprite {
+                    color: Color::rgb(0., 0., 1.),
+                    custom_size: Some(Vec2::new(smell_strength / 10., smell_strength / 10.)),
+                    ..default()
+                },
+                transform,
+                texture,
+                ..default()
+            },
         }
-        
-        (self.current_smell - self.previous_smell) / strongest
     }
 }
 
@@ -33,19 +45,20 @@ pub fn smell_system(
     emitters: Query<(&EmitsSmell, &Transform)>,
     mut receivers: Query<(&mut CanSmell, &Transform)>,
 ) {
-    for (mut receiver_smell, receiver_transform) in receivers.iter_mut() {
-        let mut current_smell = 0.;
+    for (mut receiver, receiver_transform) in receivers.iter_mut() {
+        let mut new_smell = 0.;
 
-        for (emitter_smell, emitter_transform) in emitters.iter() {
-            let distance = receiver_transform.translation.distance(emitter_transform.translation);
-            
-            if distance < receiver_smell.smell_radius {
-                let smell_strength = emitter_smell.smell * (1. - distance / receiver_smell.smell_radius);
-            
-                current_smell += smell_strength;
+        for (emitter, emitter_transform) in emitters.iter() {
+            let distance = receiver_transform
+                .translation
+                .distance(emitter_transform.translation);
+
+            if distance < receiver.smell_strength * emitter.smell {
+                new_smell += distance / receiver.smell_strength * emitter.smell;
             }
         }
 
-        receiver_smell.update(current_smell);
+        receiver.strongest_ever = new_smell.max(receiver.strongest_ever);
+        receiver.smell = new_smell / receiver.strongest_ever;
     }
 }
