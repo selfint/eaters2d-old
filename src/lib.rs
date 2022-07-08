@@ -90,7 +90,7 @@ fn add_creatures(asset_server: Res<AssetServer>, mut commands: Commands) {
                     let (y, x) = (angle as f32 * std::f32::consts::PI).sin_cos();
 
                     parent.spawn_bundle(CanSmellBundle::new(
-                        CREATURE_SIZE * 2.,
+                        1.,
                         Transform::from_xyz(x * CREATURE_SIZE / 2., y * CREATURE_SIZE / 2., 0.),
                         texture.clone(),
                     ));
