@@ -59,6 +59,11 @@ pub fn smell_system(
         }
 
         receiver.strongest_ever = new_smell.max(receiver.strongest_ever);
-        receiver.smell = new_smell / receiver.strongest_ever;
+        
+        receiver.smell = if receiver.strongest_ever <= 0.0001 { 
+            1.0 
+        } else { 
+            new_smell / receiver.strongest_ever 
+        };
     }
 }
