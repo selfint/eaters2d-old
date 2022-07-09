@@ -71,6 +71,8 @@ pub fn creature_movement(
         // pipe inputs into neural network
         let network_inputs: Vec<f32> = inputs.iter().map(|v| v.0.smell).collect();
         let network_outputs = neural_network.forward(&network_inputs);
+        
+        println!("{:?} -> {:?}", network_inputs, network_outputs);
 
         // unpack network outputs
         let new_speed = network_outputs[0];
