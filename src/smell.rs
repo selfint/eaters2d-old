@@ -54,7 +54,7 @@ pub fn smell_system(
                 .distance(emitter_transform.translation);
 
             if distance < receiver.smell_strength * emitter.smell {
-                new_smell += distance / receiver.smell_strength * emitter.smell;
+                new_smell += distance / (receiver.smell_strength * emitter.smell);
             }
         }
 
