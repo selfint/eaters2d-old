@@ -13,12 +13,12 @@ mod smell;
 
 const WINDOW_WIDTH: f32 = 500.;
 const WINDOW_HEIGHT: f32 = 500.;
-const CREATURE_SIZE: f32 = 15.;
-const FOOD_SIZE: f32 = 5.;
-const FOOD_COUNT: usize = 100;
+const CREATURE_SIZE: f32 = 10.;
+const FOOD_SIZE: f32 = 6.;
+const FOOD_COUNT: usize = 20;
 const CREATURE_COUNT: usize = 20;
 const CREATURE_HEALTH: f32 = 3.;
-const CREATURE_MAX_AGE: f32 = 60.;
+const CREATURE_MAX_AGE: f32 = 180.;
 const CREATURE_MUTATION_RATE: f32 = 0.05;
 const CREATURE_MUTATION_RANGE: f32 = 0.05;
 
@@ -28,6 +28,9 @@ pub struct Config {
     pub creature_mutation_rate: f32,
     pub creature_mutation_range: f32,
 }
+
+#[derive(Component)]
+struct DebugText;
 
 #[wasm_bindgen]
 pub fn run_web() {
@@ -53,6 +56,7 @@ pub fn run() {
     app.add_plugins(DefaultPlugins);
 
     app.add_startup_system(startup_camera);
+    app.add_startup_system(add_text);
     app.add_startup_system(add_creatures);
     app.add_startup_system(spawn_foods);
 
@@ -73,6 +77,25 @@ fn startup_camera(mut commands: Commands) {
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());
 }
 
+fn add_text(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let font = asset_server.load("fonts/FiraSans.ttf");
+    let text_style = TextStyle {
+        font,
+        font_size: 30.0,
+        color: Color::WHITE,
+    };
+    let text_alignment = TextAlignment {
+        vertical: VerticalAlign::Center,
+        horizontal: HorizontalAlign::Left,
+    };
+
+    commands.spawn_bundle(Text2dBundle {
+        text: Text::with_section("Max food eaten: 0", text_style, text_alignment),
+        transform: Transform::from_xyz(-WINDOW_WIDTH / 2.0 + 20.0, WINDOW_HEIGHT / 2.0 - 20.0, 2.0),
+        ..default()
+    }).insert(DebugText);
+}
+
 fn add_creatures(asset_server: Res<AssetServer>, mut commands: Commands) {
     let texture = asset_server.load("white_circle.png");
 
@@ -82,16 +105,16 @@ fn add_creatures(asset_server: Res<AssetServer>, mut commands: Commands) {
                 random_location(),
                 CREATURE_SIZE,
                 CREATURE_HEALTH,
-                &[4, 2],
+                &[3, 2],
                 texture.clone(),
             ))
             .with_children(|parent| {
-                for angle in [0., 0.5, 1.0, 1.5] {
+                for angle in [0.0, 2.0 / 3.0, 4.0 / 3.0] {
                     let (y, x) = (angle as f32 * std::f32::consts::PI).sin_cos();
 
                     parent.spawn_bundle(CanSmellBundle::new(
-                        1.,
-                        Transform::from_xyz(x * CREATURE_SIZE / 2., y * CREATURE_SIZE / 2., 0.),
+                        CREATURE_SIZE * 6.0,
+                        Transform::from_xyz(x * CREATURE_SIZE, y * CREATURE_SIZE, 1.0),
                         texture.clone(),
                     ));
                 }
@@ -142,7 +165,7 @@ fn creature_eat(
         for (food, mut food_transform) in foods.iter_mut() {
             let distance = (food_transform.translation - transform.translation).length();
 
-            if distance < creature.size / 2. + food.size / 2. {
+            if distance < creature.size + food.size {
                 creature.health += food.size;
                 creature.food_eaten += 1;
                 food_transform.translation = random_location_with_offset(3.).extend(0.);
@@ -151,8 +174,22 @@ fn creature_eat(
     }
 }
 
-fn debugger(query: Query<(&Creature, &Transform)>) {
-    for (smell, transform) in query.iter() {
-        // println!("{:?} {:?}", smell, transform);
+fn debugger(
+    mut query: Query<(&Creature, &mut Sprite)>,
+    mut text_q: Query<&mut Text, With<DebugText>>,
+) {
+    let max_eaten = query.iter().map(|c| c.0.food_eaten).max().unwrap();
+
+    for mut text in text_q.iter_mut() {
+        text.sections[0].value = format!("Max food eaten: {}", max_eaten);
+    }
+
+    // set color of best creature to white
+    for (creature, mut sprite) in query.iter_mut() {
+        if creature.food_eaten == max_eaten {
+            sprite.color = Color::rgb(1.0, 1.0, 1.0);
+        } else {
+            sprite.color = Color::rgb(1.0, 0.0, 0.0);
+        }
     }
 }
