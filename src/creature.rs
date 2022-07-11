@@ -2,7 +2,7 @@ use crate::neural_network::*;
 use crate::smell::CanSmell;
 use bevy::prelude::*;
 
-#[derive(Component, Debug)]
+#[derive(Component, Debug, Default)]
 pub struct Creature {
     pub age: f32,
     pub health: f32,
@@ -31,16 +31,14 @@ impl CreatureBundle {
         CreatureBundle {
             creature: Creature {
                 health,
-                age: 0.,
                 size,
-                speed: 0.,
-                food_eaten: 0,
+                ..default()
             },
             neural_network: NeuralNetwork::new(dims, sigmoid_activation),
             sprite_bundle: SpriteBundle {
                 sprite: Sprite {
-                    custom_size: Some(Vec2::new(size, size)),
-                    color: Color::rgb(255., 0., 0.),
+                    custom_size: Some(Vec2::new(size * 2.0, size * 2.0)),
+                    color: Color::rgb(1.0, 0.0, 0.0),
                     ..default()
                 },
                 texture,
@@ -72,14 +70,12 @@ pub fn creature_movement(
         let network_inputs: Vec<f32> = inputs.iter().map(|v| v.0.smell).collect();
         let network_outputs = neural_network.forward(&network_inputs);
         
-        println!("{:?} -> {:?}", network_inputs, network_outputs);
-
         // unpack network outputs
-        let new_speed = network_outputs[0];
-        let angle_change = network_outputs[1] * 0.05 - 0.025;
+        let speed_change = network_outputs[0] * 0.1 - 0.05;
+        let angle_change = network_outputs[1] * 0.5 - 0.25;
 
         // calculate step
-        creature.speed = new_speed;
+        creature.speed = (creature.speed + speed_change).clamp(0.0, 1.0);
 
         // turn
         transform.rotate(Quat::from_rotation_z(angle_change * std::f32::consts::PI));
