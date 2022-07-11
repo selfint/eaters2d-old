@@ -14,14 +14,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Configure nightly 🌙
+      - name: Configure rust 🦀
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
+          toolchain: stable
           default: true
           target: wasm32-unknown-unknown
       - name: Enable caching 📥
-        uses: Swatinem/rust-cache@v1
+        uses: actions/cache@v3.0.4
+        with:
+          path: ./target
+          key: ${{ runner.os }}-build-${{ hashFiles('Cargo.lock') }}
       - name: Installing wasm-pack 📦
         uses: jetli/wasm-pack-action@v0.3.0
         with:
