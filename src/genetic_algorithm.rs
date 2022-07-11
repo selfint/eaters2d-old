@@ -31,7 +31,7 @@ pub fn hunger(
     mut query: Query<(Entity, &mut Creature), Without<Dead>>,
 ) {
     for (entity, mut creature) in query.iter_mut() {
-        creature.health -= (0.05 + creature.speed) * time.delta().as_millis() as f32 / 1000.;
+        creature.health -= (1.0 + creature.speed) * time.delta().as_millis() as f32 / 1000.;
 
         if creature.health <= 0. {
             commands.entity(entity).insert(Dead);
