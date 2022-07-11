@@ -27,17 +27,18 @@ pub struct Config {
     pub creature_max_age: f32,
     pub creature_mutation_rate: f32,
     pub creature_mutation_range: f32,
+    pub creature_inputs: usize,
 }
 
 #[derive(Component)]
 struct DebugText;
 
 #[wasm_bindgen]
-pub fn run_web() {
-    run()
+pub fn run_web(creature_inputs: u32) {
+    run(creature_inputs.try_into().unwrap());
 }
 
-pub fn run() {
+pub fn run(creature_inputs: usize) {
     let mut app = App::new();
 
     app.insert_resource(ClearColor(Color::rgb(0.4, 0.3, 0.0)));
@@ -51,6 +52,7 @@ pub fn run() {
         creature_max_age: CREATURE_MAX_AGE,
         creature_mutation_rate: CREATURE_MUTATION_RATE,
         creature_mutation_range: CREATURE_MUTATION_RANGE,
+        creature_inputs,
     });
 
     app.add_plugins(DefaultPlugins);
@@ -96,8 +98,10 @@ fn add_text(mut commands: Commands, asset_server: Res<AssetServer>) {
     }).insert(DebugText);
 }
 
-fn add_creatures(asset_server: Res<AssetServer>, mut commands: Commands) {
+fn add_creatures(asset_server: Res<AssetServer>, config: Res<Config>, mut commands: Commands) {
     let texture = asset_server.load("white_circle.png");
+
+    let creature_inputs = config.creature_inputs;
 
     for _ in 0..CREATURE_COUNT {
         commands
@@ -105,12 +109,13 @@ fn add_creatures(asset_server: Res<AssetServer>, mut commands: Commands) {
                 random_location(),
                 CREATURE_SIZE,
                 CREATURE_HEALTH,
-                &[3, 2],
+                &[creature_inputs, 2],
                 texture.clone(),
             ))
             .with_children(|parent| {
-                for angle in [0.0, 2.0 / 3.0, 4.0 / 3.0] {
-                    let (y, x) = (angle as f32 * std::f32::consts::PI).sin_cos();
+                for input in 0..creature_inputs {
+                    let angle = (0.25 + input as f32 / creature_inputs as f32) * std::f32::consts::PI * 2.0;
+                    let (y, x) = angle.sin_cos();
 
                     parent.spawn_bundle(CanSmellBundle::new(
                         CREATURE_SIZE * 6.0,

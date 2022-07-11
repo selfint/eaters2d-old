@@ -7,7 +7,7 @@ pub struct Creature {
     pub age: f32,
     pub health: f32,
     pub size: f32,
-    speed: f32,
+    pub speed: f32,
     pub food_eaten: usize,
 }
 

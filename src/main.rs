@@ -1,3 +1,3 @@
 fn main() {
-    libeaters2d::run();
+    libeaters2d::run(2);
 }

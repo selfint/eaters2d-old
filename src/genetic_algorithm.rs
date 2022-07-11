@@ -50,8 +50,12 @@ pub fn genetic_algorithm(
     for (entity, mut creature, mut transform, mut neural_network) in dead_creatures.iter_mut() {
         commands.entity(entity).remove::<Dead>();
         transform.translation = random_location().extend(0.);
+
+        // reset creature parameters
         creature.age = 0.;
         creature.health = config.creature_health;
+        creature.speed = 0.0;
+        creature.food_eaten = 0;
 
         // sample random potential mate based on their health
         let mut rng = rand::thread_rng();
