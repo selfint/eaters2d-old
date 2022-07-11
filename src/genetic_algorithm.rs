@@ -24,13 +24,14 @@ pub fn aging(
 }
 
 pub fn hunger(
+    #[allow(unused_variables)]
     config: Res<Config>,
     mut commands: Commands,
     time: Res<Time>,
     mut query: Query<(Entity, &mut Creature), Without<Dead>>,
 ) {
     for (entity, mut creature) in query.iter_mut() {
-        creature.health -= time.delta().as_millis() as f32 / 1000.;
+        creature.health -= (0.05 + creature.speed) * time.delta().as_millis() as f32 / 1000.;
 
         if creature.health <= 0. {
             commands.entity(entity).insert(Dead);

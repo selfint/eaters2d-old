@@ -117,10 +117,12 @@ impl NeuralNetwork {
     }
 }
 
+#[allow(dead_code)]
 pub fn sigmoid_activation(x: f32) -> f32 {
     1. / (1. + (-x).exp())
 }
 
+#[allow(dead_code)]
 pub fn relu_activation(x: f32) -> f32 {
     if x > 0. {
         x
@@ -129,10 +131,12 @@ pub fn relu_activation(x: f32) -> f32 {
     }
 }
 
+#[allow(dead_code)]
 pub fn linear_activation(x: f32) -> f32 {
     x
 }
 
+#[allow(dead_code)]
 pub fn tanh_activation(x: f32) -> f32 {
     x.tanh()
 }
