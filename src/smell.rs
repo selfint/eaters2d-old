@@ -30,7 +30,7 @@ impl CanSmellBundle {
             sprite_bundle: SpriteBundle {
                 sprite: Sprite {
                     color: Color::rgb(0., 0., 1.),
-                    custom_size: Some(Vec2::new(smell_strength * 10., smell_strength * 10.)),
+                    custom_size: Some(Vec2::new(smell_strength / 6.0, smell_strength / 6.0)),
                     ..default()
                 },
                 transform,
@@ -42,8 +42,8 @@ impl CanSmellBundle {
 }
 
 pub fn smell_system(
-    emitters: Query<(&EmitsSmell, &Transform)>,
-    mut receivers: Query<(&mut CanSmell, &Transform)>,
+    emitters: Query<(&EmitsSmell, &GlobalTransform)>,
+    mut receivers: Query<(&mut CanSmell, &GlobalTransform)>,
 ) {
     for (mut receiver, receiver_transform) in receivers.iter_mut() {
         let mut new_smell = 0.;
@@ -53,17 +53,18 @@ pub fn smell_system(
                 .translation
                 .distance(emitter_transform.translation);
 
-            if distance < receiver.smell_strength * emitter.smell {
-                new_smell += distance / (receiver.smell_strength * emitter.smell);
+            if distance < receiver.smell_strength + emitter.smell {
+                new_smell += distance / (receiver.smell_strength + emitter.smell);
             }
         }
 
         receiver.strongest_ever = new_smell.max(receiver.strongest_ever);
-        
-        receiver.smell = if receiver.strongest_ever <= 0.0001 { 
-            1.0 
-        } else { 
-            new_smell / receiver.strongest_ever 
+
+        // don't amplify 0 smell by dividing by 0
+        receiver.smell = if receiver.strongest_ever <= 0.0001 {
+            0.0
+        } else {
+            new_smell / receiver.strongest_ever
         };
     }
 }
