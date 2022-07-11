@@ -22,13 +22,13 @@ impl FoodBundle {
             emits_smell: EmitsSmell { smell: size },
             sprite_bundle: SpriteBundle {
                 sprite: Sprite {
-                    custom_size: Some(Vec2::new(size, size)),
-                    color: Color::rgb(0., 255., 0.),
+                    custom_size: Some(Vec2::new(size * 2.0, size * 2.0)),
+                    color: Color::rgb(0.0, 1.0, 0.0),
                     ..default()
                 },
                 texture,
                 transform: Transform {
-                    translation: Vec3::new(location.x, location.y, 0.),
+                    translation: location.extend(0.0),
                     ..default()
                 },
                 ..default()
