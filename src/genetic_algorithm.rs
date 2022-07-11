@@ -91,12 +91,9 @@ pub fn genetic_algorithm(
                 }
             }
 
-            println!("new params: {:?}", new_params);
-
             // mutate
             for param in &mut new_params {
                 if rng.gen::<f32>() < config.creature_mutation_rate {
-                    println!("mutated");
                     *param += rng
                         .gen_range(-config.creature_mutation_range..config.creature_mutation_range);
                 }
@@ -104,6 +101,15 @@ pub fn genetic_algorithm(
 
             // replace neural network with new one
             neural_network.parameters = new_params;
+        } else {
+            // if no potential mate, just mutate
+            for param in &mut neural_network.parameters {
+                if rng.gen::<f32>() < config.creature_mutation_rate {
+                    *param += rng
+                        .gen_range(-config.creature_mutation_range..config.creature_mutation_range);
+                }
+            }
+
         }
     }
 }
