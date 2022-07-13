@@ -14,35 +14,48 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Configure rust 🦀
+
+      - name: 📥 Enable caching
+        id: enable-caching
+        uses: actions/cache@v3.0.4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            ./target
+          key: ${{ runner.os }}-build-deps-${{ hashFiles('Cargo.toml') }}
+
+      - name: Remove crate lib fingerprint
+        if: steps.enable-caching.outputs.cache-hit == 'true'
+        run: rm --force ./target/wasm32-unknown-unknown/release/.fingerprint/eaters2d-*
+
+      - name: 🦀 Configure rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           default: true
           target: wasm32-unknown-unknown
-      - name: Enable caching 📥
-        id: enable-caching
-        uses: actions/cache@v3.0.4
-        with:
-          path: ./target
-          key: ${{ runner.os }}-build-deps-${{ hashFiles('Cargo.toml') }}
-      - name: Remove crate lib fingerprint
-        if: steps.enable-caching.outputs.cache-hit == 'true'
-        run: rm --force ./target/wasm32-unknown-unknown/eaters2d-*
-      - name: Installing wasm-pack 📦
+
+      - name: 📦 Install wasm-pack
         uses: jetli/wasm-pack-action@v0.3.0
         with:
           version: latest
-      - name: Install Bevy dependencies 🕊️🕊️🕊️
+
+      - name: 🕊️ Install Bevy dependencies
         run: sudo apt-get install libasound2-dev libudev-dev
+
       - name: Compile to .wasm 🔨
         uses: actions-rs/cargo@v1
         with:
           command: build
           args: --release --target wasm32-unknown-unknown
-      - name : Run wasm-pack 📦
+
+      - name: 📦 Run wasm-pack
         run: wasm-pack build --target web --release
-      - name: Deploy 🚀
+
+      - name: 🚀 Deploy to Github Pages
         run: |
           git checkout --orphan web
           mv index.html pkg/index.html
@@ -55,5 +68,5 @@ jobs:
           ls
           git config --global user.email "selfint@gmail.com"
           git config --global user.name "Tom Selfin"
-          git commit -m "Deploy 🚀"
+          git commit -m "🚀 Deploy to Github Pages"
           git push -u origin web --force
