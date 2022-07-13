@@ -29,7 +29,7 @@ jobs:
 
       - name: Remove crate lib fingerprint
         if: steps.enable-caching.outputs.cache-hit == 'true'
-        run: rm --force ./target/wasm32-unknown-unknown/release/.fingerprint/eaters2d-*
+        run: rm -r --force ./target/wasm32-unknown-unknown/release/.fingerprint/eaters2d-*
 
       - name: 🦀 Configure rust
         uses: actions-rs/toolchain@v1
