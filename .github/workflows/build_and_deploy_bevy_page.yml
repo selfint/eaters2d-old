@@ -20,11 +20,15 @@ jobs:
           toolchain: stable
           default: true
           target: wasm32-unknown-unknown
-      # - name: Enable caching 📥
-      #   uses: actions/cache@v3.0.4
-      #   with:
-      #     path: ./target/deps
-      #     key: ${{ runner.os }}-build-deps-${{ hashFiles('Cargo.lock') }}
+      - name: Enable caching 📥
+        id: enable-caching
+        uses: actions/cache@v3.0.4
+        with:
+          path: ./target
+          key: ${{ runner.os }}-build-deps-${{ hashFiles('Cargo.toml') }}
+      - name: Remove crate lib fingerprint
+        if: steps.enable-caching.outputs.cache-hit == 'true'
+        run: rm --force ./target/wasm32-unknown-unknown/eaters2d-*
       - name: Installing wasm-pack 📦
         uses: jetli/wasm-pack-action@v0.3.0
         with:
