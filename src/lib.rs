@@ -41,7 +41,7 @@ pub fn run_web(creature_inputs: u32) {
 pub fn run(creature_inputs: usize) {
     let mut app = App::new();
 
-    app.insert_resource(ClearColor(Color::rgb(0.0, 0.3, 0.4)));
+    app.insert_resource(ClearColor(Color::rgb(0.4, 0.3, 0.0)));
     app.insert_resource(WindowDescriptor {
         width: WINDOW_WIDTH,
         height: WINDOW_HEIGHT,
