@@ -1,0 +1,21 @@
+<html>
+
+<head>
+  <title>My Bevy Project</title>
+</head>
+
+<body>
+  <script type="module">
+    import init, { run_web } from "./pkg/libeaters2d.js";
+
+    var creature_inputs = parseInt(location.search.split('inputs=')[1]) || 2;
+    console.log(`got creature inputs: ${creature_inputs}`);
+
+    init().then(() => {
+      run_web(creature_inputs)
+    });
+
+  </script>
+</body>
+
+</html>

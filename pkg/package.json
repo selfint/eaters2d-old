@@ -1,0 +1,12 @@
+{
+  "name": "eaters2d",
+  "version": "0.1.0",
+  "files": [
+    "libeaters2d_bg.wasm",
+    "libeaters2d.js",
+    "libeaters2d.d.ts"
+  ],
+  "module": "libeaters2d.js",
+  "types": "libeaters2d.d.ts",
+  "sideEffects": false
+}
